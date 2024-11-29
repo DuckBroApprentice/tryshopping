@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/DuckBroApprentice/Shopping/database"
 	"github.com/DuckBroApprentice/Shopping/models"
 	"github.com/gin-gonic/gin"
 )
@@ -55,4 +56,23 @@ func PutUser(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusNotFound, "Error")
+}
+
+// DBConnect Controller
+func FindAllUsersFromDB(c *gin.Context) {
+	var users []models.User
+	database.DBConnect.Find(&users)
+	c.JSON(http.StatusOK, users)
+}
+
+func FindUserById(userId int) models.User {
+	var user models.User
+	database.DBConnect.Where("id = ?", userId).First(&user)
+	return user
+}
+
+// Sign Up User(POST)
+func PostUserToDB(c *gin.Context) {
+	var user models.User
+	database.DBConnect.Set("NewUser", user)
 }
