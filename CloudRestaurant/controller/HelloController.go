@@ -10,5 +10,7 @@ func (hello *HelloController) Router(engine *gin.Engine) {
 
 //解析 /hello
 func (hello *HelloController) Hello(context *gin.Context) {
-
+	context.JSON(200, map[string]interface{}{
+		"message": "hello cloudrestaurant",
+	})
 }
