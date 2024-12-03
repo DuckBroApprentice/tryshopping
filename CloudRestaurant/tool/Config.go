@@ -24,7 +24,7 @@ func ParseConfig(path string) (*Config, error) {
 
 	reader := bufio.NewReader(file)
 	decoder := json.NewDecoder(reader)
-	if err := decoder.Decode(_cfg); err != nil {
+	if err := decoder.Decode(&_cfg); err != nil {
 		return nil, err
 	}
 	return _cfg, nil
