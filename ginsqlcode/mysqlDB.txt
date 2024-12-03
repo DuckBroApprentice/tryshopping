@@ -1,0 +1,20 @@
+mysql -uroot -p
+Enter password:....
+
+
+mysql >
+create database ginsql;
+
+show database;
+
+user ginsql;
+
+show tables;
+
+desc person;
+//查表結構
+
+
+select * from person;
+
+select * from person;
