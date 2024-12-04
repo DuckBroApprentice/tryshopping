@@ -3,17 +3,22 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/dao"
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/model"
+	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/param"
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/tool"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
-	"gorm.io/gorm/logger"
 )
 
 type MemberService struct {
+}
+
+func (ms *MemberService) SmsLogin(loginparam param.SmsLoginParma) *model.Member {
+	return nil
 }
 
 func (ms *MemberService) Sendcode(phone string) bool {
@@ -25,7 +30,7 @@ func (ms *MemberService) Sendcode(phone string) bool {
 	config := tool.GetConfig().Sms
 	client, err := dysmsapi.NewClientWithAccessKey(config.RegionId, config.AppKey, config.AppSecret)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Fatal(err.Error())
 		return false
 	}
 	request := dysmsapi.CreateSendSmsRequest()
@@ -41,7 +46,7 @@ func (ms *MemberService) Sendcode(phone string) bool {
 	response, err := client.SendSms(request)
 	fmt.Println(response)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Fatal(err)
 		return false
 	}
 
@@ -49,7 +54,7 @@ func (ms *MemberService) Sendcode(phone string) bool {
 	//驗證碼發送成功
 	if response.Code == "OK" {
 		//將驗證碼保存到數據庫中
-		smsCode := model.SmsCode{Phone: phone, Code: code, BizId: response.BizId, CreateTime: tine.Now().Unix()}
+		smsCode := model.SmsCode{Phone: phone, Code: code, BizID: response.BizId, CreateTime: time.Now().Unix()}
 		memberDao := dao.MemberDao{tool.DbEngine}
 		result := memberDao.InsertCode(smsCode)
 		return result > 0

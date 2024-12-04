@@ -2,9 +2,10 @@
 package dao
 
 import (
+	"log"
+
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/model"
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/tool"
-	"gorm.io/gorm/logger"
 )
 
 type MemberDao struct {
@@ -14,7 +15,7 @@ type MemberDao struct {
 func (md *MemberDao) InsertCode(sms model.SmsCode) int64 {
 	result, err := md.InsertOne(&sms)
 	if err != nil {
-		logger.Error(err.Error())
+		log.Fatal(err)
 	}
 	return result
 }
