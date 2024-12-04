@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/dao"
+	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/model"
 	"github.com/DuckBroApprentice/Shopping/CloudRestaurant/tool"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"gorm.io/gorm/logger"
@@ -46,8 +48,14 @@ func (ms *MemberService) Sendcode(phone string) bool {
 	//3、接收返回結果，並判斷發送狀態
 	//驗證碼發送成功
 	if response.Code == "OK" {
-		return true
+		//將驗證碼保存到數據庫中
+		smsCode := model.SmsCode{Phone: phone, Code: code, BizId: response.BizId, CreateTime: tine.Now().Unix()}
+		memberDao := dao.MemberDao{tool.DbEngine}
+		result := memberDao.InsertCode(smsCode)
+		return result > 0
 	}
 
 	return false
 }
+
+//將smsCode插入
