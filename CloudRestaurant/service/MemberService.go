@@ -18,7 +18,28 @@ type MemberService struct {
 }
 
 func (ms *MemberService) SmsLogin(loginparam param.SmsLoginParma) *model.Member {
-	return nil
+	//1、獲取手機號及驗證碼 : loginparam
+	//2、驗證手機號+驗證碼是否正確
+	//dao層編寫方法
+	md := dao.MemberDao{tool.DbEngine}
+	sms := md.ValidateSmsCode(loginparam.Phone, loginparam.Code)
+	if sms.Id == 0 {
+		return nil
+	}
+	//3、根據手機號member表中查詢是否存在
+	member := md.QueryByPhone(loginparam.Phone)
+	if member.Id != 0 {
+		return member
+	}
+	//4、不存在的手機號則創建一個member記錄，並保存
+	user := model.Member{}
+	user.UserName = loginparam.Phone
+	user.Mobile = loginparam.Phone
+	user.RegisterTime = time.Now().Unix()
+
+	user.Id = md.InsertMember(user)
+
+	return &user
 }
 
 func (ms *MemberService) Sendcode(phone string) bool {
