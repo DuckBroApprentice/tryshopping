@@ -14,15 +14,15 @@ type RedisStore struct {
 
 var RediStore RedisStore
 
-func InitRedisStore() {
+func InitRedisStore() *RedisStore {
 	config := GetConfig().RedisConfig
-	client := redis.NewClient(&Options{
+	client := redis.NewClient(&redis.Options{
 		Addr:     config.Addr + ":" + config.Port,
 		Password: config.Password,
 		DB:       config.Db,
 	})
 
-	RediStore = redisStore{client: client}
+	RediStore = RedisStore{client: client}
 
 	base64Captcha.SetCustomStore(&RediStore)
 
