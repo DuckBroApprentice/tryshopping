@@ -13,6 +13,21 @@ type MemberDao struct {
 	*tool.Orm
 }
 
+// 根據用戶名和密碼查詢
+func (md *MemberDao) Query(name string, password string) *model.Member {
+	var member model.Member
+
+	//由於密碼做了sha256計算
+	password = tool.EncoderSha256(password)
+	//"user_name" "password"要與mdoel.Member結構標籤相同
+	_, err := md.Where("user_name = ? adn password = ?", name, password).Get(&member)
+	if err != nil {
+		log.Println(err.Error())
+		return nil
+	}
+	return &member
+}
+
 // 驗證手機號和驗證碼是否存在
 func (md *MemberDao) ValidateSmsCode(phone string, code string) *model.SmsCode {
 	var sms model.SmsCode

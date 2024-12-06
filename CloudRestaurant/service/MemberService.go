@@ -17,6 +17,27 @@ import (
 type MemberService struct {
 }
 
+// 具體登錄功能
+func (ms *MemberService) Login(name string, password string) *model.Member {
+	//查詢用戶信息(dao)
+	md := dao.MemberDao{tool.DbEngine}
+	member := md.Query(name, password)
+	//1、用戶已存在，直接返回
+	if member.Id != 0 {
+		return member
+	}
+	//2、用戶不存在，創建+保存(dao)
+	user := model.Member{}
+	user.UserName = name
+	//不能明文保存(tool)
+	user.Password = tool.EncoderSha256(password)
+	user.RegisterTime = time.Now().Unix()
+
+	result := md.InsertMember(user)
+	user.Id = result
+	return &user
+}
+
 func (ms *MemberService) SmsLogin(loginparam param.SmsLoginParma) *model.Member {
 	//1、獲取手機號及驗證碼 : loginparam
 	//2、驗證手機號+驗證碼是否正確
